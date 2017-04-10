@@ -1,0 +1,12 @@
+{
+  "name" : "KnightsTour",
+  "repositories" : [ {
+    "type" : "composer",
+    "url" : "https://packagist.org/"
+  } ],
+	"autoload": {
+	    "psr-0": {
+	        "Tour\\": "src/"
+	    }
+	}
+}
