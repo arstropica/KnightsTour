@@ -57,6 +57,12 @@ class Knight
      *
      * @var array
      */
+    protected $moves = [];
+
+    /**
+     *
+     * @var array
+     */
     protected $history = [];
 
     /**
@@ -82,6 +88,7 @@ class Knight
     public function __construct(Board $board)
     {
         $this->board = $board;
+        $this->history[] = $board->location();
     }
 
     /**
@@ -138,14 +145,14 @@ class Knight
      */
     protected function _backtrack($point = 0, $survey = false)
     {
-        for ($i = count($this->history) - 1; $i > $point; $i --) {
-            $bearing = $this->history[$i];
+        for ($i = count($this->moves) - 1; $i > $point; $i --) {
+            $bearing = $this->moves[$i];
             $reverse_bearing = $this->movelist[0 - array_search($bearing, $this->movelist)];
             if (! $this->move($reverse_bearing, true)) {
                 throw new \Exception('Could not backtrack to move #' . $i);
                 return false;
             } else {
-                $this->history[] = $reverse_bearing;
+                $this->moves[] = $reverse_bearing;
             }
             if ($survey) {
                 if ($this->survey()) {
@@ -170,8 +177,9 @@ class Knight
         $displacement = $this->_displace_local($bearing);
         if ($displacement && $this->board->isValidMove($displacement)) {
             if ($this->board->update($displacement, $force)) {
+                $this->history[] = $this->board->location();
                 if ($this->debug) {
-                    print "Move #" . count($this->history) . ": The Knight has moved to: \"" . implode(", ", $this->board->location()) . "\".\n";
+                    print "Move #" . count($this->moves) . ": The Knight has moved to: \"" . implode(", ", $this->board->location()) . "\".\n";
                 }
                 return true;
             }
@@ -223,10 +231,10 @@ class Knight
                     if ($this->survey($board)) {
                         unset($board);
                         $this->move($bearing);
-                        $this->history[] = $bearing;
+                        $this->moves[] = $bearing;
                         if (empty($this->pmr) || $this->pmr['value'] <= $possibilities) {
                             $this->pmr = [
-                                'index' => count($this->history) - 1,
+                                'index' => count($this->moves) - 1,
                                 'value' => $possibilities
                             ];
                         }
@@ -254,7 +262,25 @@ class Knight
      */
     public function getNumMoves()
     {
-        return count($this->history);
+        return count($this->moves);
+    }
+
+    /**
+     *
+     * @return array $moves
+     */
+    public function getMoves()
+    {
+        return $this->moves;
+    }
+
+    /**
+     *
+     * @return Array $history
+     */
+    public function getHistory()
+    {
+        return $this->history;
     }
 }
 
