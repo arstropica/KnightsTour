@@ -1,0 +1,60 @@
+BODY {
+	background-color: #F0F0F0;
+	#board
+	{
+		display: table;
+		width: 100%;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		.board_row
+		{
+			display: table-row;
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			&:nth-child(odd) {
+				.board_square {
+					&:nth-child(odd) {
+						background-color: #FFF8DC;
+					}
+					&:nth-child(even) {
+						background-color: #DEB887;
+					}
+				}
+			}
+			&:nth-child(even) {
+				.board_square {
+					&:nth-child(odd) {
+						background-color: #DEB887;
+					}
+					&:nth-child(even) {
+						background-color: #FFF8DC;
+					}
+				}		
+			}		
+		}
+		.board_square
+		{
+			display: table-cell;
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			opacity: .4;
+			&.active {
+				opacity: 1;
+			}
+		}
+		
+	}
+	&.post {
+		#tourSlider {
+			display: inline-block;
+		}
+	}
+	#tourSlider {
+		display: none;
+		margin-bottom: 25px;
+		width: 100%;
+	}
+}

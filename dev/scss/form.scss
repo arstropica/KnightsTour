@@ -1,0 +1,27 @@
+#ktform {
+	.form-group {
+		INPUT {
+			&[type="text"] {
+				&.form-control {
+					margin-bottom: 5px;
+				}
+			}
+		}
+	}
+}
+@media (min-width: $screen-md-min) {
+	#ktform {
+		display: table;
+		margin: 25px auto;
+		.form-group {
+			INPUT {
+				&[type="text"] {
+					&.form-control {
+						max-width: 90px;
+						margin-right: 10px;
+					}
+				}
+			}
+		}
+	}
+}

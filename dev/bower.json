@@ -1,0 +1,25 @@
+{
+  "name": "knightstour",
+  "homepage": "https://github.com/arstropica/KnightsTour",
+  "authors": [
+    "Akin Williams <aowilliams@arstropica.com>"
+  ],
+  "description": "PHP implementation of the Knight's Tour problem",
+  "main": "index.php",
+  "keywords": [
+    "knight's",
+    "tour"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-sass": "^3.3.7",
+    "seiyria-bootstrap-slider": "^9.7.3"
+  }
+}

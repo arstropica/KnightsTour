@@ -1,0 +1,29 @@
+{
+  "name": "knightstour",
+  "version": "1.0.0",
+  "description": "PHP implementation of the Knight's Tour problem",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arstropica/KnightsTour.git"
+  },
+  "keywords": [
+    "knight's",
+    "tour"
+  ],
+  "author": "Akin Williams <aowilliams@arstropica.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arstropica/KnightsTour/issues"
+  },
+  "homepage": "https://github.com/arstropica/KnightsTour#readme",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-sass": "^2.0.0"
+  }
+}
