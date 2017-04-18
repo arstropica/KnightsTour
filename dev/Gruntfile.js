@@ -39,7 +39,7 @@ module.exports = function (grunt) {
                         flatten: true,
                         cwd: 'bower_components/',
                         src: ['bootstrap-sass/assets/fonts/**'],
-                        dest: 'fonts/'
+                        dest: '../public/fonts/bootstrap/'
                     },
 
                     // Stylesheets
