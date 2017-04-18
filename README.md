@@ -5,7 +5,7 @@ Simple brute-force approach to the knight's tour problem
 
 - Clone into web root parent directory.
 - Point web document root to `./public` folder.
-- Run `composer install` in project root.
+- Run `composer dump-autoload` in project root.
 - In `./dev`, run `npm install`, then `bower install && grunt` to finish loading dependencies and build assets.
 
 
