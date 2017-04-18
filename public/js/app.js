@@ -38,18 +38,20 @@ $(function() {
 
 	function onChange(oldVal, newVal) {
 		var square = getSquare(newVal);
-		var rect = getLocation(square);
-		moveKnight(rect);
-		if (oldVal > newVal) {
-			square = getSquare(oldVal);
-			// $('#' + square.id).empty();
-			$('#' + square.id).removeClass('active');
-		} else if ($('#' + square.id).is(':empty')) {
-			$('#' + square.id).html(
-					'<span>' + (parseInt(newVal, 10) + 1) + '</span>');
-			$('#' + square.id).addClass('active');
-		} else {
-			$('#' + square.id).addClass('active');
+		if (square) {
+			var rect = getLocation(square);
+			moveKnight(rect);
+			if (oldVal > newVal) {
+				square = getSquare(oldVal);
+				// $('#' + square.id).empty();
+				$('#' + square.id).removeClass('active');
+			} else if ($('#' + square.id).is(':empty')) {
+				$('#' + square.id).html(
+						'<span>' + (parseInt(newVal, 10) + 1) + '</span>');
+				$('#' + square.id).addClass('active');
+			} else {
+				$('#' + square.id).addClass('active');
+			}
 		}
 	}
 
@@ -72,7 +74,7 @@ $(function() {
 			var diff = newVal - oldVal;
 			if (diff < 0) {
 				for (var i = 0; i > diff; i--) {
-					onChange(oldVal + i, oldVal- 1 + i);
+					onChange(oldVal + i, oldVal - 1 + i);
 				}
 			} else {
 				for (var i = 0; i < diff; i++) {
