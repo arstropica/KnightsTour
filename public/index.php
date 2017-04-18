@@ -14,7 +14,7 @@ $result = [
     'total' => pow($size, 2),
     'history' => []
 ];
-if ($_POST) {
+if (! empty($_POST)) {
     $classes[] = 'post';
     $loc = [
         0,
