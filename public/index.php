@@ -12,7 +12,8 @@ $result = [
     'moves' => 0,
     'counter' => 0,
     'total' => pow($size, 2),
-    'history' => []
+    'history' => [],
+    'coverage' => 0
 ];
 if (! empty($_POST)) {
     $classes[] = 'post';
@@ -34,11 +35,12 @@ if (! empty($_POST)) {
     $board = new Board($loc, $size);
     $knight = new Knight($board);
     try {
-        $knight->explore(pow($size, 2));
+        $knight->explore(pow($size, 2) * 2);
         $result['moves'] = $knight->getNumMoves();
         $result['counter'] = $board->getCounter();
         $result['history'] = $knight->getHistory();
         $result['total'] = pow($size, 2);
+        $result['coverage'] = $result['counter'] / $result['total'];
     } catch (\Exception $e) {
         $error = $e->getMessage();
         $classes[] = 'error';
@@ -125,7 +127,7 @@ body {
             				<h1>Results</h1>
             				<div class="row">
             					<div class="col-xs-6">
-                					<p><span class="coverage-num"><?php echo $result['counter'] / $result['total'] * 100; ?>%</span> of squares covered</p>
+                					<p><span class="coverage-num"><?php echo $result['coverage'] * 100; ?>%</span> of squares covered</p>
         							<p>Algorithm efficiency is : <?php echo max(0, round((($result['total'] / (($result['moves'] - $result['total']) + 1)) / $result['total']) * 100, 2)); ?>%</p>
                 				</div>
                 				<div class="col-xs-6">
