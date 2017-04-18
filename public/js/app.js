@@ -38,19 +38,26 @@ $(function() {
 
 	function onChange(oldVal, newVal) {
 		var square = getSquare(newVal);
+		var $square = $('#' + square.id);
 		if (square) {
+			if ($square.data('knight') === undefined) {
+				$square.data('knight', newVal);
+			}
 			var rect = getLocation(square);
 			moveKnight(rect);
 			if (oldVal > newVal) {
 				square = getSquare(oldVal);
-				// $('#' + square.id).empty();
-				$('#' + square.id).removeClass('active');
-			} else if ($('#' + square.id).is(':empty')) {
-				$('#' + square.id).html(
+				$square = $('#' + square.id);
+				if ($square.data('knight') == oldVal) {
+					$square.empty();
+				}
+				$square.removeClass('active');
+			} else if ($square.is(':empty')) {
+				$square.html(
 						'<span>' + (parseInt(newVal, 10) + 1) + '</span>');
-				$('#' + square.id).addClass('active');
+				$square.addClass('active');
 			} else {
-				$('#' + square.id).addClass('active');
+				$square.addClass('active');
 			}
 		}
 	}
