@@ -34,6 +34,23 @@ $(function() {
 		knight.style.top = rect.top + 'px';
 	}
 
+	function onChange(oldVal, newVal) {
+		var square = getSquare(newVal);
+		var rect = getLocation(square);
+		moveKnight(rect);
+		if (oldVal > newVal) {
+			square = getSquare(oldVal);
+			// $('#' + square.id).empty();
+			$('#' + square.id).removeClass('active');
+		} else if ($('#' + square.id).is(':empty')) {
+			$('#' + square.id).html(
+					'<span>' + (parseInt(newVal, 10) + 1) + '</span>');
+			$('#' + square.id).addClass('active');
+		} else {
+			$('#' + square.id).addClass('active');
+		}
+	}
+
 	$('#slider').slider(
 			{
 				formatter : function(value) {
@@ -46,23 +63,23 @@ $(function() {
 		if (e.value === undefined) {
 			newVal = oldVal = 0;
 		} else {
-			newVal = e.value.newValue.toString();
-			oldVal = e.value.oldValue.toString();
+			newVal = parseInt(e.value.newValue.toString(), 10);
+			oldVal = parseInt(e.value.oldValue.toString(), 10);
 		}
-		var square = getSquare(newVal);
-		var rect = getLocation(square);
-		moveKnight(rect);
-		if (oldVal > newVal) {
-			square = getSquare(oldVal);
-			// $('#' + square.id).empty();
-			$('#' + square.id).removeClass('active');
-		} else if ($('#' + square.id).is(':empty')) {
-			$('#' + square.id).html('<span>' + (parseInt(newVal, 10) + 1) + '</span>');
-			$('#' + square.id).addClass('active');
+		if (Math.abs(newVal - oldVal) > 1) {
+			var diff = newVal - oldVal;
+			if (diff < 0) {
+				for (var i = 0; i > diff; i--) {
+					onChange(oldVal + i, oldVal- 1 + i);
+				}
+			} else {
+				for (var i = 0; i < diff; i++) {
+					onChange(oldVal + i, oldVal + 1 + i);
+				}
+			}
 		} else {
-			$('#' + square.id).addClass('active');
+			onChange(oldVal, newVal);
 		}
-
 	});
 	$('#slider').trigger('change');
 });
