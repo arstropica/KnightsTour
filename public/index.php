@@ -24,8 +24,8 @@ if (! empty($_POST)) {
     $size = 8;
     if (! empty($_POST['x']) && ! empty($_POST['y'])) {
         $loc = [
-            $_POST['x'],
-            $_POST['y']
+            $x = $_POST['x'],
+            $y = $_POST['y']
         ];
     }
     if (! empty($_POST['size'])) {
@@ -128,7 +128,7 @@ body {
             				<div class="row">
             					<div class="col-xs-6">
                 					<p><span class="coverage-num"><?php echo $result['coverage'] * 100; ?>%</span> of squares covered</p>
-        							<p>Algorithm efficiency is : <?php echo max(0, round((($result['total'] / (($result['moves'] - $result['total']) + 1)) / $result['total']) * 100, 2)); ?>%</p>
+        							<p>Algorithm efficiency is : <?php echo max(0, 100 - round(((($result['moves'] - $result['total'])) / $result['total']) * 100, 2)); ?>%</p>
                 				</div>
                 				<div class="col-xs-6">
                 					<p><span class="moves-num">Tour completed in <?php echo $result['moves']; ?></span> moves</p>
