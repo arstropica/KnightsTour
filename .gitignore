@@ -3,3 +3,4 @@
 .project
 /deployment.properties
 /deployment.xml
+/vendor/
