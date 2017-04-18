@@ -4,7 +4,7 @@ use Tour\Knight;
 
 require_once dirname(__FILE__) . '/../vendor/autoload.php';
 
-$x = $y = 0;
+$x = $y = $duration = $mem_usage = 0;
 $size = 8;
 $error = false;
 $classes=[];
@@ -35,13 +35,18 @@ if (! empty($_POST)) {
     $board = new Board($loc, $size);
     $knight = new Knight($board);
     try {
+        $start = microtime(true);
         $knight->explore(pow($size, 2) * 2);
+        $duration = microtime(true) - $start;
+        $mem_usage = memory_get_peak_usage();
         $result['moves'] = $knight->getNumMoves();
         $result['counter'] = $board->getCounter();
         $result['history'] = $knight->getHistory();
         $result['total'] = pow($size, 2);
         $result['coverage'] = $result['counter'] / $result['total'];
     } catch (\Exception $e) {
+        $duration = microtime(true) - $start;
+        $mem_usage = memory_get_peak_usage();
         $error = $e->getMessage();
         $classes[] = 'error';
     }
@@ -128,10 +133,12 @@ body {
             					<div class="col-xs-6">
                 					<p><span class="coverage-num"><?php echo $result['coverage'] * 100; ?>%</span> of squares covered</p>
         							<p>Algorithm efficiency is : <?php echo max(0, 100 - round(((($result['moves'] + 1 - $result['total'])) / $result['total']) * 100, 2)); ?>%</p>
+        							<p>Memory Usage : <?php echo round($mem_usage / 1024000, 2); ?> mB</p>
                 				</div>
                 				<div class="col-xs-6">
                 					<p><span class="moves-num">Tour completed in <?php echo $result['moves'] + 1; ?></span> moves</p>
         							<p>Extra Moves Used : <?php echo max(0,$result['moves'] + 1 - $result['total']); ?></p>
+        							<p>Time taken (ms) : <?php echo round($duration * 1000, 2); ?></p>
                 				</div>
             				</div>
             			</div>
