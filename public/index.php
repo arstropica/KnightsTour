@@ -47,7 +47,6 @@ if (! empty($_POST)) {
     }
 }
 echo "<script>var data=" . json_encode($result) . ";</script>";
-echo "<script>console.dir(data);</script>";
 ?>
 <!DOCTYPE html>
 <html lang="en">
