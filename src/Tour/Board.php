@@ -93,7 +93,7 @@ class Board
     }
 
     /**
-     * Check validity and board status of displacement
+     * Check validity and board status of a move displacement
      *
      * @param array $displacement            
      * @return number|boolean
