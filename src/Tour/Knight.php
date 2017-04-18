@@ -217,6 +217,9 @@ class Knight
      */
     public function explore($limit = 64)
     {
+        if ($this->board->getCounter() == pow($this->board->getSize(), 2)) {
+            return;
+        }
         $current_location = $this->board->location();
         $bearings = $this->survey();
         $possibilities = count($bearings);
@@ -230,8 +233,9 @@ class Knight
                 if ($board->update($displacement)) {
                     if ($this->survey($board)) {
                         unset($board);
-                        $this->move($bearing);
-                        $this->moves[] = $bearing;
+                        if ($this->move($bearing)) {
+                            $this->moves[] = $bearing;
+                        }
                         if (empty($this->pmr) || $this->pmr['value'] <= $possibilities) {
                             $this->pmr = [
                                 'index' => count($this->moves) - 1,
@@ -250,7 +254,7 @@ class Knight
                 print "Backtracking  ... .\n";
             }
             if ($this->_backtrack(0, true)) {
-                return $this->explore($limit);
+                return $this->explore(-- $limit);
             }
         }
     }
@@ -262,7 +266,7 @@ class Knight
      */
     public function getNumMoves()
     {
-        return count($this->moves);
+        return count($this->moves) + 1;
     }
 
     /**
