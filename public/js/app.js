@@ -4,6 +4,8 @@ $(function() {
 		var size = $(".board_square").width();
 		$(".board_square").width(size);
 		$(".board_square").height(size);
+		$('#knight').width(size * .75);
+		$('#knight').height(size * .75);
 	}
 	$(window).resize(windowResize);
 	windowResize();
@@ -30,7 +32,7 @@ $(function() {
 	}
 
 	function moveKnight(rect) {
-		knight.style.left = rect.left + 'px';
+		knight.style.left = rect.left - (knight.offsetWidth / 4) + 'px';
 		knight.style.top = rect.top + 'px';
 	}
 
