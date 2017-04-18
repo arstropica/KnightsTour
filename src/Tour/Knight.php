@@ -191,10 +191,11 @@ class Knight
      * Returns array of bearings for possible (unexplored) moves
      *
      * @param Board $board            
-     * @param string $only_new            
+     * @param number $depth            
+     * @param boolean $only_new            
      * @return number[]
      */
-    public function survey(Board $board = null, $only_new = true)
+    public function survey(Board $board = null, $depth = 1, $only_new = true)
     {
         $possibles = [];
         $board = $board ?: $this->board;
