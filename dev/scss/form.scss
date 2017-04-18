@@ -1,4 +1,5 @@
 #ktform {
+	margin: 25px auto;
 	.form-group {
 		INPUT {
 			&[type="text"] {
@@ -12,7 +13,6 @@
 @media (min-width: $screen-md-min) {
 	#ktform {
 		display: table;
-		margin: 25px auto;
 		.form-group {
 			INPUT {
 				&[type="text"] {
