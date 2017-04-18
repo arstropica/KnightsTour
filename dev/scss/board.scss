@@ -34,6 +34,9 @@ BODY {
 			&:nth-child(odd) {
 				.board_square {
 					&:nth-child(odd) {
+						-webkit-box-shadow: inset 0px 0px 8px 1px rgba(0,0,0,0.33);
+						-moz-box-shadow: inset 0px 0px 8px 1px rgba(0,0,0,0.33);
+						box-shadow: inset 0px 0px 8px 1px rgba(0,0,0,0.33);
 						background-color: #FFF8DC;
 					}
 					&:nth-child(even) {
@@ -47,6 +50,9 @@ BODY {
 						background-color: #DEB887;
 					}
 					&:nth-child(even) {
+						-webkit-box-shadow: inset 0px 0px 8px 1px rgba(0,0,0,0.33);
+						-moz-box-shadow: inset 0px 0px 8px 1px rgba(0,0,0,0.33);
+						box-shadow: inset 0px 0px 8px 1px rgba(0,0,0,0.33);
 						background-color: #FFF8DC;
 					}
 				}		
