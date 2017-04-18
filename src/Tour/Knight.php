@@ -266,7 +266,7 @@ class Knight
      */
     public function getNumMoves()
     {
-        return count($this->moves) + 1;
+        return count($this->moves);
     }
 
     /**
