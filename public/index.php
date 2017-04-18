@@ -131,7 +131,7 @@ body {
                 				</div>
                 				<div class="col-xs-6">
                 					<p><span class="moves-num">Tour completed in <?php echo $result['moves']; ?></span> moves</p>
-        							<p>Extra Squares Used : <?php echo max(0,$result['moves'] - $result['total']); ?></p>
+        							<p>Extra Moves Used : <?php echo max(0,$result['moves'] - $result['total']); ?></p>
                 				</div>
             				</div>
             			</div>
