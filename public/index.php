@@ -127,11 +127,11 @@ body {
             				<div class="row">
             					<div class="col-xs-6">
                 					<p><span class="coverage-num"><?php echo $result['coverage'] * 100; ?>%</span> of squares covered</p>
-        							<p>Algorithm efficiency is : <?php echo max(0, 100 - round(((($result['moves'] - $result['total'])) / $result['total']) * 100, 2)); ?>%</p>
+        							<p>Algorithm efficiency is : <?php echo max(0, 100 - round(((($result['moves'] + 1 - $result['total'])) / $result['total']) * 100, 2)); ?>%</p>
                 				</div>
                 				<div class="col-xs-6">
-                					<p><span class="moves-num">Tour completed in <?php echo $result['moves']; ?></span> moves</p>
-        							<p>Extra Moves Used : <?php echo max(0,$result['moves'] - $result['total']); ?></p>
+                					<p><span class="moves-num">Tour completed in <?php echo $result['moves'] + 1; ?></span> moves</p>
+        							<p>Extra Moves Used : <?php echo max(0,$result['moves'] + 1 - $result['total']); ?></p>
                 				</div>
             				</div>
             			</div>
