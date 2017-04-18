@@ -118,6 +118,31 @@ body {
 		<?php endif; ?>
 
 		<div class="row">
+            <div class="col-xs-12 col-md-6 col-md-offset-3">
+            	<div class="well well-sm" id="results">
+            		<div class="row">
+            			<div class="col-xs-12">
+            				<h1>Results</h1>
+            				<div class="row">
+            					<div class="col-xs-6">
+                					<p><span class="coverage-num"><?php echo $result['counter'] / $result['total'] * 100; ?>%</span> of squares covered</p>
+        							<p>Algorithm efficiency is : <?php echo max(0, round((($result['total'] / (($result['moves'] - $result['total']) + 1)) / $result['total']) * 100, 2)); ?>%</p>
+                				</div>
+                				<div class="col-xs-6">
+                					<p><span class="moves-num">Tour completed in <?php echo $result['moves']; ?></span> moves</p>
+        							<p>Extra Squares Used : <?php echo max(0,$result['moves'] - $result['total']); ?></p>
+                				</div>
+            				</div>
+            			</div>
+            		</div>
+            		<div style="width: 100%; clear: both;"></div>
+            	</div>
+            	<div style="width:100%; margin-bottom: 15px;"></div>
+            </div>
+		</div>
+		<!-- /.row -->
+		
+		<div class="row">
 			<div class="col-xs-12 col-md-6 col-md-offset-3 text-center">
 				<input id="slider" data-slider-id='tourSlider' type="text" data-slider-min="0" data-slider-max="<?php echo $result['moves']; ?>" data-slider-step="1" data-slider-value="0"/>
 			</div>
@@ -128,11 +153,13 @@ body {
 			<div class="col-xs-12 col-md-offset-3 col-md-6 text-center">
 				<ul id="board">
                 <?php for ($ix = 0; $ix < $size; $ix ++) : ?>
-                	<ul class="board_row" id="<?php echo "row_{$ix}"; ?>">
-                	<?php for ($iy = 0; $iy < $size; $iy ++) : ?>
-                		<li class="board_square" id="<?php echo "{$ix}x{$iy}"; ?>"></li>
-                	<?php endfor; ?>
-                	</ul>
+                	<li class="board_row_wrap">
+                    	<ul class="board_row" id="<?php echo "row_{$ix}"; ?>">
+                    	<?php for ($iy = 0; $iy < $size; $iy ++) : ?>
+                    		<li class="board_square" id="<?php echo "{$ix}x{$iy}"; ?>"></li>
+                    	<?php endfor; ?>
+                    	</ul>
+                    </li>
                 <?php endfor; ?>
 				</ul>
 			</div>

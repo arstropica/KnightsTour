@@ -1,0 +1,41 @@
+/* http://www.jquery2dotnet.com/ */
+
+.glyphicon {
+  margin-right: 2px;
+}
+
+.result .glyphicon {
+  font-size: 22px;
+}
+
+.coverage-num {
+  margin-top: 0px;
+  font-weight: bold;
+}
+
+.progress {
+  margin-bottom: 5px;
+}
+
+.progress-bar {
+  text-align: left;
+}
+
+.result-desc .col-md-3 {
+  padding-right: 0px;
+}
+
+#results {
+  display:none;
+  min-height: 150px;
+  background-color: #A3D7E6;
+  .post & {
+  	display: block;
+  }
+  H1 {
+	padding: 0 0 10px;
+	margin: 0 0 15px;
+	font-size: 20px;
+	border-bottom: 1px solid #fff;
+  }
+}

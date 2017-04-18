@@ -7,12 +7,30 @@ BODY {
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		.board_row
-		{
-			display: table-row;
+		.board_row_wrap {
+			display: table;
+			width: 100%;
 			list-style: none;
 			margin: 0;
 			padding: 0;
+			.board_row
+			{
+				display: table-row;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.board_square
+			{
+				display: table-cell;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				opacity: .4;
+				&.active {
+					opacity: 1;
+				}
+			}
 			&:nth-child(odd) {
 				.board_square {
 					&:nth-child(odd) {
@@ -34,18 +52,6 @@ BODY {
 				}		
 			}		
 		}
-		.board_square
-		{
-			display: table-cell;
-			list-style: none;
-			margin: 0;
-			padding: 0;
-			opacity: .4;
-			&.active {
-				opacity: 1;
-			}
-		}
-		
 	}
 	&.post {
 		#tourSlider {
