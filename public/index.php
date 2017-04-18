@@ -191,7 +191,7 @@ body {
 						<label class="sr-only" for=size>Size</label> <input
 							class="form-control" id="size" name="size" type="text"
 							placeholder="squares &sup2;"
-							value="<?php echo $size != 8 ?: ''; ?>" />
+							value="<?php echo $size != 8 ? $size : ''; ?>" />
 					</div>
 
 					<div class="form-group">
