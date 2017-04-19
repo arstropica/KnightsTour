@@ -160,15 +160,33 @@ body {
 		<div class="row">
 			<div class="col-xs-12 col-md-offset-3 col-md-6 text-center">
 				<ul id="board">
+                	<li class="board_row_wrap">
+                    	<ul class="board_labels">
+                    		<li class="board_label" data-value="&nbsp;"></li>
+                    		<?php for ($i = 0; $i < $size; $i ++) : ?>
+                    			<li class="board_label" data-value="<?php echo chr($i + 97); ?>"></li>
+                    		<?php endfor; ?>
+                    		<li class="board_label" data-value="&nbsp;"></li>
+                    	</ul>
+                    </li>
                 <?php for ($ix = 0; $ix < $size; $ix ++) : ?>
                 	<li class="board_row_wrap">
                     	<ul class="board_row" id="<?php echo "row_{$ix}"; ?>">
+                    		<li class="board_label" data-value="<?php echo $size - $ix; ?>"></li>
                     	<?php for ($iy = 0; $iy < $size; $iy ++) : ?>
                     		<li class="board_square" id="<?php echo "{$ix}x{$iy}"; ?>"></li>
                     	<?php endfor; ?>
+                    		<li class="board_label" data-value="<?php echo $size - $ix; ?>"></li>
                     	</ul>
                     </li>
                 <?php endfor; ?>
+                	<li class="board_row_wrap">
+                    	<ul class="board_labels">
+                    		<?php for ($i = 0; $i < $size; $i ++) : ?>
+                    			<li class="board_label"><?php echo chr($i + 97); ?></li>
+                    		<?php endfor; ?>
+                    	</ul>
+                    </li>
 				</ul>
 			</div>
 		</div>

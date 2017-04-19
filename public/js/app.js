@@ -1,11 +1,17 @@
 var knight = $('#knight').get(0);
 $(function() {
 	function windowResize() {
+		var $labels = $('.board_label').empty();
 		var size = $(".board_square").width();
-		$(".board_square").width(size);
-		$(".board_square").height(size);
+		var $squares = $(".board_square");
+		$squares.width(size);
+		$labels.width(size);
+		$squares.height(size);
 		$('#knight').width(size * .75);
 		$('#knight').height(size * .75);
+		$labels.each(function() {
+			$(this).text($(this).data('value'));
+		});
 	}
 	$(window).resize(windowResize);
 	windowResize();
@@ -53,8 +59,7 @@ $(function() {
 				}
 				$square.removeClass('active');
 			} else if ($square.is(':empty')) {
-				$square.html(
-						'<span>' + (parseInt(newVal, 10) + 1) + '</span>');
+				$square.html('<span>' + (parseInt(newVal, 10) + 1) + '</span>');
 				$square.addClass('active');
 			} else {
 				$square.addClass('active');
