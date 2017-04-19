@@ -16,10 +16,14 @@ $(function() {
 	$(window).resize(windowResize);
 	windowResize();
 
+	function getIndices(step) {
+		return data['history'][step] === undefined ? false
+				: data['history'][step];
+	}
+
 	function getSquare(value) {
 		var square = false;
-		var loc = data['history'][value] === undefined ? false
-				: data['history'][value];
+		var loc = getIndices(value);
 		if (loc) {
 			square = $('#board').find('#' + loc[0] + 'x' + loc[1]).get(0);
 		}
@@ -70,8 +74,9 @@ $(function() {
 	$('#slider').slider(
 			{
 				formatter : function(value) {
-					var loc = data['history'][value] === undefined ? 'None'
-							: data['history'][value].join(', ');
+					var indices = getIndices(value);
+					var loc = indices ? [ String.fromCharCode(97 + indices[1]),
+							size - indices[0] ].join('') : 'None';
 					return 'Current Location: ' + loc;
 				}
 			}).on('change', function(e) {

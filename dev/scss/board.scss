@@ -36,12 +36,24 @@ BODY {
 				.board_square
 				{
 					display: table-cell;
+					position: relative;
 					list-style: none;
 					margin: 0;
 					padding: 0;
 					opacity: .4;
 					&.active {
 						opacity: 1;
+					}
+					span {
+					    display: block;
+					    position: absolute;
+					    width: 100%;
+					    text-align: center;
+					    top: 50%;
+					    line-height: 0;
+						font-size: 20px;
+						font-weight: bold;
+						color: #43a297;
 					}
 				}
 			}

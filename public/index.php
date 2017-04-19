@@ -52,6 +52,7 @@ if (! empty($_POST)) {
     }
 }
 echo "<script>var data=" . json_encode($result) . ";</script>";
+echo "<script>var size=" . $size . ";</script>";
 ?>
 <!DOCTYPE html>
 <html lang="en">
