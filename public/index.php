@@ -133,12 +133,14 @@ body {
             				<div class="row">
             					<div class="col-xs-6">
                 					<p><span class="coverage-num"><?php echo $result['coverage'] * 100; ?>%</span> of squares covered</p>
-        							<p>Algorithm efficiency is : <?php echo max(0, 100 - round(((($result['moves'] + 1 - $result['total'])) / $result['total']) * 100, 2)); ?>%</p>
+        							<p>Net Algorithm efficiency : <?php echo round(($result['total'] / ($result['moves'] + 1)) * 100, 2); ?>%</p>
+									<p>Local Efficiency: <span id="leff" style="font-style: italic">100%</span></p>
         							<p>Memory Usage : <?php echo round($mem_usage / 1024000, 2); ?> mB</p>
                 				</div>
                 				<div class="col-xs-6">
                 					<p><span class="moves-num">Tour completed in <?php echo $result['moves'] + 1; ?></span> moves</p>
         							<p>Extra Moves Used : <?php echo max(0,$result['moves'] + 1 - $result['total']); ?></p>
+									<p>Coverage Potential: <span id="cpot"></span></p>
         							<p>Time taken (ms) : <?php echo round($duration * 1000, 2); ?></p>
                 				</div>
             				</div>

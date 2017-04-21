@@ -29,6 +29,11 @@ $(function() {
 		}
 		return square;
 	}
+	
+	function getLocalEfficiency(step) {
+		var current = $(".board_square.active").length;
+		return step ? Math.round((current / (step + 1)) * 10000) / 100 : 100; 
+	}
 
 	function getLocation(element) {
 		var vpos = document.body.getBoundingClientRect();
@@ -68,6 +73,7 @@ $(function() {
 			} else {
 				$square.addClass('active');
 			}
+			$('#leff').text(getLocalEfficiency(newVal) + '%');
 		}
 	}
 
