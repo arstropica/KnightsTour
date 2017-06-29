@@ -13,19 +13,20 @@ $result = [
     'counter' => 0,
     'total' => pow($size, 2),
     'history' => [],
+    'scoverage' => [],
     'coverage' => 0
 ];
 if (! empty($_POST)) {
     $classes[] = 'post';
     $loc = [
-        0,
-        0
+        1,
+        1
     ];
     $size = 8;
     if (! empty($_POST['x']) && ! empty($_POST['y'])) {
         $loc = [
-            $x = $_POST['x'],
-            $y = $_POST['y']
+            $x = $_POST['x'] ? : 1,
+            $y = $_POST['y'] ? : 1
         ];
     }
     if (! empty($_POST['size'])) {
@@ -43,6 +44,7 @@ if (! empty($_POST)) {
         $result['counter'] = $board->getCounter();
         $result['history'] = $knight->getHistory();
         $result['total'] = pow($size, 2);
+        $result['scoverage'] = $knight->getCoverage();
         $result['coverage'] = $result['counter'] / $result['total'];
     } catch (\Exception $e) {
         $duration = microtime(true) - $start;
@@ -134,13 +136,13 @@ body {
             					<div class="col-xs-6">
                 					<p><span class="coverage-num"><?php echo $result['coverage'] * 100; ?>%</span> of squares covered</p>
         							<p>Net Algorithm efficiency : <?php echo round(($result['total'] / ($result['moves'] + 1)) * 100, 2); ?>%</p>
-									<p>Local Efficiency: <span id="leff" style="font-style: italic">100%</span></p>
+									<p>Move Efficiency: <span id="meff" style="font-style: italic">100%</span></p>
         							<p>Memory Usage : <?php echo round($mem_usage / 1024000, 2); ?> mB</p>
                 				</div>
                 				<div class="col-xs-6">
                 					<p><span class="moves-num">Tour completed in <?php echo $result['moves'] + 1; ?></span> moves</p>
         							<p>Extra Moves Used : <?php echo max(0,$result['moves'] + 1 - $result['total']); ?></p>
-									<p>Coverage Potential: <span id="cpot"></span></p>
+									<p>Advance Potential: <span id="scov">-</span></p>
         							<p>Time taken (ms) : <?php echo round($duration * 1000, 2); ?></p>
                 				</div>
             				</div>
@@ -166,27 +168,27 @@ body {
                 	<li class="board_row_wrap">
                     	<ul class="board_labels">
                     		<li class="board_label" data-value="&nbsp;"></li>
-                    		<?php for ($i = 0; $i < $size; $i ++) : ?>
-                    			<li class="board_label" data-value="<?php echo chr($i + 97); ?>"></li>
+                    		<?php for ($i = 1; $i <= $size; $i ++) : ?>
+                    			<li class="board_label" data-value="<?php echo chr($i + 96); ?>"></li>
                     		<?php endfor; ?>
                     		<li class="board_label" data-value="&nbsp;"></li>
                     	</ul>
                     </li>
-                <?php for ($ix = 0; $ix < $size; $ix ++) : ?>
+                <?php for ($ix = $size; $ix > 0; $ix --) : ?>
                 	<li class="board_row_wrap">
                     	<ul class="board_row" id="<?php echo "row_{$ix}"; ?>">
-                    		<li class="board_label" data-value="<?php echo $size - $ix; ?>"></li>
-                    	<?php for ($iy = 0; $iy < $size; $iy ++) : ?>
+                    		<li class="board_label" data-value="<?php echo $ix; ?>"></li>
+                    	<?php for ($iy = 1; $iy <= $size; $iy ++) : ?>
                     		<li class="board_square" id="<?php echo "{$ix}x{$iy}"; ?>"></li>
                     	<?php endfor; ?>
-                    		<li class="board_label" data-value="<?php echo $size - $ix; ?>"></li>
+                    		<li class="board_label" data-value="<?php echo $ix; ?>"></li>
                     	</ul>
                     </li>
                 <?php endfor; ?>
                 	<li class="board_row_wrap">
                     	<ul class="board_labels">
-                    		<?php for ($i = 0; $i < $size; $i ++) : ?>
-                    			<li class="board_label"><?php echo chr($i + 97); ?></li>
+                    		<?php for ($i = 1; $i <= $size; $i ++) : ?>
+                    			<li class="board_label"><?php echo chr($i + 96); ?></li>
                     		<?php endfor; ?>
                     	</ul>
                     </li>
