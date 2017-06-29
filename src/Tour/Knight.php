@@ -66,6 +66,12 @@ class Knight
     protected $history = [];
 
     /**
+     *
+     * @var array
+     */
+    protected $coverage = [];
+
+    /**
      * Point of most returns
      *
      * @var array
@@ -191,11 +197,10 @@ class Knight
      * Returns array of bearings for possible (unexplored) moves
      *
      * @param Board $board            
-     * @param number $depth            
      * @param boolean $only_new            
      * @return number[]
      */
-    public function survey(Board $board = null, $depth = 1, $only_new = true)
+    public function survey(Board $board = null, $only_new = true)
     {
         $possibles = [];
         $board = $board ?: $this->board;
@@ -212,6 +217,19 @@ class Knight
     }
 
     /**
+     * Scout neighboring squares and return possible moves.
+     * 
+     * @param Board $board            
+     * @param number $depth
+     * 
+     * @todo Recursively implement survey and return extended possibilities
+     * 
+     * @return array $possibilities possible moves
+     */
+    public function scout(Board $board = null, $depth = 1)
+    {}
+
+    /**
      * Initiates the tour
      *
      * @param number $limit            
@@ -222,7 +240,7 @@ class Knight
             return;
         }
         $current_location = $this->board->location();
-        $bearings = $this->survey();
+        $this->coverage[] = $bearings = $this->survey();
         $possibilities = count($bearings);
         if ($this->debug) {
             print "Possible moves: {$possibilities}.\n";
@@ -286,6 +304,15 @@ class Knight
     public function getHistory()
     {
         return $this->history;
+    }
+
+    /**
+     *
+     * @return Array $coverage
+     */
+    public function getCoverage()
+    {
+        return $this->coverage;
     }
 }
 
