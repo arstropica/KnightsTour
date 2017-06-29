@@ -34,13 +34,13 @@ class Board
      * @param array $loc            
      * @param number $size            
      */
-    public function __construct($loc = [0,0], $size = 8)
+    public function __construct($loc = [1,1], $size = 8)
     {
         $this->size = $size;
-        $this->loc = $loc;
+        $this->loc = $this->addressToNum($loc);
         $this->counter = 0;
-        $map = array_fill(0, $size, array_fill(0, $size, 0));
-        $map[$loc[0]][$loc[1]] = 1;
+        $map = array_fill(1, $size, array_fill(1, $size, 0));
+        $map[$this->loc[1]][$this->loc[0]] = 1;
         $this->counter ++;
         $this->map = $map;
     }
@@ -54,8 +54,8 @@ class Board
     protected function _update($loc)
     {
         try {
-            if (! $this->map[$loc[0]][$loc[1]]) {
-                $this->map[$loc[0]][$loc[1]] = ++ $this->counter;
+            if (! $this->map[$loc[1]][$loc[0]]) {
+                $this->map[$loc[1]][$loc[0]] = ++ $this->counter;
             }
             $this->loc = $loc;
             return $this->counter;
@@ -64,7 +64,7 @@ class Board
         }
         return false;
     }
-
+    
     /**
      * Check validity / board status, and optionally update, displacement
      *
@@ -82,7 +82,7 @@ class Board
         $loc = $this->loc;
         $loc[0] += $displacement[0];
         $loc[1] += $displacement[1];
-        if ($this->map[$loc[0]][$loc[1]] === 0 || $force) {
+        if ($this->map[$loc[1]][$loc[0]] === 0 || $force) {
             $result = 1;
         }
         
@@ -126,17 +126,15 @@ class Board
     {
         $loc = $this->loc;
         if (! is_array($displacement)) {
-            # print_r(debug_backtrace());
-            # print "\n";
             exit('Move not valid!');
         }
         foreach ($displacement as $axis => $squares) {
             $loc[$axis] += $displacement[$axis];
-            if ($loc[$axis] >= $this->size || $loc[$axis] < 0) {
+            if ($loc[$axis] > $this->size || $loc[$axis] < 1) {
                 return false;
             }
         }
-        if ($new && $this->map[$loc[0]][$loc[1]] === 1) {
+        if ($new && $this->map[$loc[1]][$loc[0]] === 1) {
             return false;
         }
         return true;
@@ -156,6 +154,19 @@ class Board
     }
 
     /**
+     * Normalize alphanumeric address
+     * 
+     * @param array $loc
+     * @return array normalized coordinates
+     */
+    public function addressToNum($loc)
+    {
+        return array_map(function($coord){
+            return ctype_alpha($coord) ? ord($coord) - 96 : $coord;
+        }, $loc);
+    }
+
+    /**
      * Print Graphical representation of board
      *
      * @param string $graphical            
@@ -163,9 +174,10 @@ class Board
      */
     public function getMap($graphical = false)
     {
+        $map = array_reverse($this->map, true);
         return $graphical ? implode("\n", array_map(function ($r) {
             return implode("\t", $r);
-        }, $this->map)) : $this->map;
+        }, $map)) : $map;
     }
 
     /**
