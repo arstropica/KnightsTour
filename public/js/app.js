@@ -1,4 +1,4 @@
-var knight = $('#knight').get(0);
+var knight = $('#knight').get(0), $slider;
 $(function() {
 	function windowResize() {
 		var $labels = $('.board_label').empty();
@@ -12,18 +12,24 @@ $(function() {
 		$labels.each(function() {
 			$(this).text($(this).data('value'));
 		});
+		alignKnight();
 	}
 	$(window).resize(windowResize);
 	windowResize();
 
-	function getIndices(step) {
+	function getHistory(step) {
 		return data['history'][step] === undefined ? false
 				: data['history'][step];
+	}
+	
+	function getCoverage(step) {
+		return data['scoverage'][step] === undefined ? false
+				: data['scoverage'][step];
 	}
 
 	function getSquare(value) {
 		var square = false;
-		var loc = getIndices(value);
+		var loc = getHistory(value);
 		if (loc) {
 			square = $('#board').find('#' + loc[0] + 'x' + loc[1]).get(0);
 		}
@@ -44,6 +50,17 @@ $(function() {
 			left : lpos.left - vpos.left + hw,
 			top : lpos.top - vpos.top + hh
 		};
+	}
+	
+	function alignKnight() {
+		if ($slider === undefined) return;
+		var value = $slider.slider('getValue');
+		var square = getSquare(value);
+		var $square = $('#' + square.id);
+		if (square) {
+			var rect = getLocation(square);
+			moveKnight(rect);
+		}
 	}
 
 	function moveKnight(rect) {
@@ -73,14 +90,15 @@ $(function() {
 			} else {
 				$square.addClass('active');
 			}
-			$('#leff').text(getLocalEfficiency(newVal) + '%');
+			$('#meff').text(getLocalEfficiency(newVal) + '%');
+			$('#scov').text((Math.round((Object.keys(getCoverage(newVal)).length / 7) * 10000) / 100) + '%');
 		}
 	}
 
-	$('#slider').slider(
+	$slider = $('#slider').slider(
 			{
 				formatter : function(value) {
-					var indices = getIndices(value);
+					var indices = getHistory(value);
 					var loc = indices ? [ String.fromCharCode(97 + indices[1]),
 							size - indices[0] ].join('') : 'None';
 					return 'Current Location: ' + loc;
