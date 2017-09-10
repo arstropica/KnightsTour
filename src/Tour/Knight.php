@@ -232,7 +232,8 @@ class Knight
     /**
      * Initiates the tour
      *
-     * @param number $limit            
+     * @param number $limit
+     * @todo implement Warnsdorff's algorithm (http://www.geeksforgeeks.org/warnsdorffs-algorithm-knights-tour-problem/)            
      */
     public function explore($limit = 64)
     {
