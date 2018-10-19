@@ -18,28 +18,29 @@ $result = [
 ];
 if (! empty($_POST)) {
     $classes[] = 'post';
-    $loc = [
-        1,
-        1
-    ];
     $size = 8;
-    if (! empty($_POST['x']) && ! empty($_POST['y'])) {
-        $loc = [
-            $x = $_POST['x'] ? : 1,
-            $y = $_POST['y'] ? : 1
-        ];
-    }
     if (! empty($_POST['size'])) {
         $size = $_POST['size'];
+    }
+    $loc = [
+        rand(1, $size),
+        rand(1, $size)
+    ];
+    if (! empty($_POST['x']) && ! empty($_POST['y'])) {
+        $loc = [
+            $x = $_POST['x'] ? : rand(1, $size),
+            $y = $_POST['y'] ? : rand(1, $size)
+        ];
     }
     
     $board = new Board($loc, $size);
     $knight = new Knight($board);
     try {
         $start = microtime(true);
-        $knight->explore(pow($size, 2) * 2);
+        $closed = $knight->explore_warnsdorff(pow($size, 2) * 2);
         $duration = microtime(true) - $start;
         $mem_usage = memory_get_peak_usage();
+        $result['closed'] = $closed;
         $result['moves'] = $knight->getNumMoves();
         $result['counter'] = $board->getCounter();
         $result['history'] = $knight->getHistory();
@@ -140,7 +141,7 @@ body {
         							<p>Memory Usage : <?php echo round($mem_usage / 1024000, 2); ?> mB</p>
                 				</div>
                 				<div class="col-xs-6">
-                					<p><span class="moves-num">Tour completed in <?php echo $result['moves'] + 1; ?></span> moves</p>
+                					<p><span class="moves-num"><?php echo $result['closed'] ? "Closed" : "Open"; ?> Tour completed in <?php echo $result['moves'] + 1; ?></span> moves</p>
         							<p>Extra Moves Used : <?php echo max(0,$result['moves'] + 1 - $result['total']); ?></p>
 									<p>Advance Potential: <span id="scov">-</span></p>
         							<p>Time taken (ms) : <?php echo round($duration * 1000, 2); ?></p>
