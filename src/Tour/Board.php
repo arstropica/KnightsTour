@@ -40,6 +40,8 @@ class Board
         $this->loc = $this->addressToNum($loc);
         $this->counter = 0;
         $map = array_fill(1, $size, array_fill(1, $size, 0));
+
+        // 2. Mark the board at P with the move number “1”
         $map[$this->loc[1]][$this->loc[0]] = 1;
         $this->counter ++;
         $this->map = $map;
@@ -152,6 +154,20 @@ class Board
             $this->loc[1]
         ];
     }
+    
+    /**
+     * Returns a new location by displacement
+     * 
+     * @param array $location
+     * @param array $displacement
+     * @return array
+     */
+    public static function displace($location, $displacement)
+    {
+        return array_map(function($coord, $delta) {
+            return $coord + $delta;
+        }, $location, $displacement);
+    }
 
     /**
      * Normalize alphanumeric address
@@ -164,6 +180,17 @@ class Board
         return array_map(function($coord){
             return ctype_alpha($coord) ? ord($coord) - 96 : $coord;
         }, $loc);
+    }
+    
+    /**
+     * Returns alphanumeric location
+     * 
+     * @param array $loc
+     * @return array
+     */
+    public function numToAddress($loc)
+    {
+        return [chr($loc[0] + 96), $loc[1]];
     }
 
     /**
