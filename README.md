@@ -13,9 +13,9 @@ Simple brute-force approach to the knight's tour problem
 
 #### From Console
 
-x: starting x coordinate. Defaults to `a` or `1`
+x: starting x coordinate (i.e. `a` or `1`). Defaults to random. 
 
-y: starting y coordinate. Defaults to `1`
+y: starting y coordinate (i.e. `1`). Defaults to random. 
 
 size: board size (squared). Defaults to `8`
 
