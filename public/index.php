@@ -83,6 +83,9 @@ body {
 	padding-top: 70px;
 	/* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
 }
+body #board .board_row_wrap .board_row .board_square span {
+    font-size: <?php echo 28 - $size; ?>px;
+}
 </style>
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
