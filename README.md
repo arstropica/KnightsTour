@@ -1,5 +1,5 @@
 # KnightsTour
-Simple brute-force approach to the knight's tour problem
+Simple approach to solving the knight's tour problem based on Warnsdorff’s algorithm for minimum accessibility.
 
 ## Installation
 
@@ -26,3 +26,8 @@ size: board size (squared). Defaults to `8`
 - map `./public` folder to web root.
 - Go to root url in your browser.
 - Submit coordinates and size values, or leave blank for defaults.
+
+
+## To Do
+
+- Implement a prediction method for identifying closed tours
