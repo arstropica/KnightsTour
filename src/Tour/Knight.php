@@ -9,48 +9,20 @@ class Knight
      * @var Board
      */
     protected $board;
-
+    
     /**
      *
      * @var array
      */
-    protected $mdict = [
-        "NN" => - 2,
-        "EN" => - 1,
-        "ES" => + 1,
-        "SS" => + 2,
-        "WS" => + 1,
-        "WN" => - 1
-    ];
-
-    /**
-     *
-     * @var array
-     */
-    protected $movelist = [
-        - 4 => 'NNE',
-        - 3 => 'ENE',
-        - 2 => 'ESE',
-        - 1 => 'SSE',
-        1 => 'NNW',
-        2 => 'WNW',
-        3 => 'WSW',
-        4 => 'SSW'
-    ];
-
-    /**
-     *
-     * @var array
-     */
-    protected $compass = [
-        - 4 => 'N',
-        - 3 => 'W',
-        - 2 => 'NW',
-        - 1 => 'NE',
-        1 => 'SW',
-        2 => 'SE',
-        3 => 'E',
-        4 => 'S'
+    protected static $movelist = [
+        [1,2],
+        [1,-2],
+        [2,1],
+        [2,-1],
+        [-1,2],
+        [-1,-2],
+        [-2,1],
+        [-2,-1]
     ];
 
     /**
@@ -94,215 +66,97 @@ class Knight
     public function __construct(Board $board)
     {
         $this->board = $board;
-        $this->history[] = $board->location();
-    }
-
-    /**
-     * Returns displacement for local moves
-     *
-     * @param string $bearing            
-     * @return number[]|mixed[]
-     */
-    protected function _displace_local($bearing)
-    {
-        $bearing = strtoupper($bearing);
-        $displacement = [];
-        $points = preg_split('/^([nsew]{2})/i', $bearing, - 1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        if (preg_grep("/" . $bearing . "/i", $this->movelist)) {
-            $displacement[0] = $this->mdict[$points[0]];
-            switch ($points[1]) {
-                case 'E':
-                    $displacement[1] = abs($displacement[0]) > 1 ? + 1 : + 2;
-                    break;
-                
-                case 'W':
-                    $displacement[1] = abs($displacement[0]) > 1 ? - 1 : - 2;
-                    break;
-            }
-        }
-        return $displacement;
-    }
-
-    /**
-     * Returns displacement for extended moves
-     *
-     * @todo Figure out how to calculate for movement along cardinal points
-     *      
-     * @param string $bearing            
-     * @param number $distance            
-     */
-    public function _displace_extended($bearing, $distance = 1)
-    {
-        $bearing = strtoupper($bearing);
-        $displacement = [];
-        if (preg_grep("/" . $bearing . "/i", $this->compass)) {}
-    }
-
-    /**
-     * Shuffle Associative Array
-     * 
-     * @param array $array
-     * @return boolean
-     */
-    function _shuffle_assoc(&$array) 
-    {
-        $new = [];
-        
-        $keys = array_keys($array);
-        
-        shuffle($keys);
-        
-        foreach($keys as $key) {
-            $new[$key] = $array[$key];
-        }
-        
-        $array = $new;
-        
-        return true;
+        $this->moves[] = $this->history[] = $board->getPosition();
     }
     
     /**
-     * Performs a simple brute-force backtrack of previous moves, with optional check
-     *
-     * @param number $point            
-     * @param string $survey            
-     * @throws \Exception
-     *
-     * @todo Refactor to allow calculation of unexplored spaces
-     *      
-     * @return boolean
+     * Get adjacent move positions
+     * 
+     * @param integer $position
+     * @param Board $board
+     * @param boolean $unvisited
+     * @return number[]
      */
-    protected function _backtrack($point = 0, $survey = false)
+    public function adjacent($position = null, $board = null, $unvisited = false) 
     {
-        for ($i = count($this->moves) - 1; $i > $point; $i --) {
-            $bearing = $this->moves[$i];
-            $reverse_bearing = $this->movelist[0 - array_search($bearing, $this->movelist)];
-            if (! $this->move($reverse_bearing, true)) {
-                throw new \Exception('Could not backtrack to move #' . $i);
-                return false;
-            } else {
-                $this->moves[] = $reverse_bearing;
-            }
-            if ($survey) {
-                if ($this->survey()) {
-                    $this->pmr = null;
-                    return true;
+        $adjacent = [];
+        if (! isset($board)) $board = $this->board;
+        if (! isset($position)) $position = $board->getPosition();
+        $map = $board->getMap();
+        $size = $board->getSize();
+        foreach (self::$movelist as $xy) {
+            $c = $board->positionCoords($position);
+            $delta = [$c[0] + $xy[0], $c[1] + $xy[1]];
+            if ($board->valid($delta)){
+                $index = ($xy[1] * $size) + $xy[0] + $position;
+                if((!$unvisited || $map[$index] === 0)) {
+                    $adjacent[] = $index;
                 }
             }
         }
-        $this->pmr = null;
-        return true;
+        if ($this->debug) {
+            print "Found adjacent indexes to {$position} : (" . implode(", ",$adjacent) . ").\n"; 
+        }
+        return $adjacent;
     }
-
+    
+    /**
+     * Returns the number of (unvisited) squares in adjacent positions
+     *
+     * @param integer $position
+     * @param Board $board
+     * @param boolean $unvisited
+     *
+     * @return integer
+     */
+    public function accessibility($position, $board = null, $unvisited = true)
+    {
+        if (! isset($board)) $board = $this->board;
+        return count($this->adjacent($position, $board, $unvisited));
+    }
+    
+    /**
+     * Scout neighboring squares and return accessibility
+     *
+     * @param integer $p
+     * @param Board $board
+     * @param boolean $unvisited
+     *
+     * @return number[]
+     */
+    public function scout($position = null, $board = null, $unvisited = true)
+    {
+        $accessibility = [];
+        $board = $board ?: $this->board;
+        if (!isset($position)) $position = $this->board->getPosition();
+        $adjacent = $this->adjacent($position, $board, $unvisited);
+        foreach ($adjacent as $move) {
+            $accessibility[$move] = $this->accessibility($move, $board, $unvisited);
+        }
+        return $accessibility;
+    }
+    
     /**
      * Processes a single move
      *
-     * @param string $bearing            
-     * @param boolean $force            
+     * @param integer $position
+     * 
      * @return boolean
      */
-    public function move($bearing, $force = false)
+    public function move($position)
     {
-        $displacement = $this->_displace_local($bearing);
-        if ($displacement && $this->board->isValidMove($displacement)) {
-            if ($this->board->update($displacement, $force)) {
-                $this->history[] = $this->board->location();
+        $adjacent = $this->adjacent();
+        if ($this->board->valid($position) && in_array($position, $adjacent)) {
+            if ($this->board->update($position)) {
+                $position = $this->board->getPosition();
+                $this->history[] = $position;
                 if ($this->debug) {
-                    print "Move #" . (count($this->moves) + 1) . ": The Knight has moved to: " .  strtoupper(implode("", $this->board->numToAddress($this->board->location()))) . " [" . implode(",", $this->board->location()) . "].\n";
+                    print "Move #" . (count($this->moves) + 1) . ": The Knight has moved to: " .  strtoupper(implode("", $this->board->getPosition('algebraic'))) . " [" . implode(",", $this->board->getPosition('numeric')) . "] (" . $position . ").\n";
                 }
                 return true;
             }
         }
         return false;
-    }
-
-    /**
-     * Returns array of bearings for possible (unexplored) moves
-     *
-     * @param Board $board            
-     * @param boolean $only_new
-     * @param boolean $return_locations
-     * 
-     * @return number[]
-     */
-    public function survey(Board $board = null, $only_new = true, $return_locations = false)
-    {
-        $possibles = [];
-        $board = $board ?: $this->board;
-        foreach ($this->movelist as $bearing) {
-            $displacement = $this->_displace_local($bearing);
-            if ($board->isValidMove($displacement, $only_new)) {
-                $possible = $board->check($displacement);
-                if ($possible || ! $only_new) {
-                    $possibles[$bearing] = ($return_locations ? Board::displace($board->location(), $displacement) : 1);
-                }
-            }
-        }
-        return $possibles;
-    }
-
-    /**
-     * Scout neighboring squares and return possible moves.
-     * 
-     * @param Board $board            
-     * @param number $depth
-     * 
-     * @todo Recursively implement survey and return extended possibilities
-     * 
-     * @return array $possibilities possible moves
-     */
-    public function scout(Board $board = null, $depth = 1)
-    {}
-
-    /**
-     * Initiates the tour
-     *
-     * @param number $limit
-     * @return void
-     */
-    public function explore($limit = 64)
-    {
-        if ($this->board->getCounter() == pow($this->board->getSize(), 2)) {
-            return;
-        }
-        $current_location = $this->board->location();
-        $this->coverage[] = $bearings = $this->survey();
-        $possibilities = count($bearings);
-        if ($this->debug) {
-            print "Possible moves: {$possibilities}.\n";
-        }
-        if ($possibilities) {
-            foreach (array_keys($bearings) as $bearing) {
-                $displacement = $this->_displace_local($bearing);
-                $board = new Board($current_location, $this->board->getSize());
-                if ($board->update($displacement)) {
-                    if ($this->survey($board)) {
-                        unset($board);
-                        if ($this->move($bearing)) {
-                            $this->moves[] = $bearing;
-                        }
-                        if (empty($this->pmr) || $this->pmr['value'] <= $possibilities) {
-                            $this->pmr = [
-                                'index' => count($this->moves) - 1,
-                                'value' => $possibilities
-                            ];
-                        }
-                        if ($limit > 0) {
-                            return $this->explore(-- $limit);
-                        }
-                        break;
-                    }
-                }
-            }
-        } elseif ($this->pmr) {
-            if ($this->debug) {
-                print "Backtracking  ... .\n";
-            }
-            if ($this->_backtrack(0, true)) {
-                return $this->explore(-- $limit);
-            }
-        }
-        return;
     }
     
     /**
@@ -310,66 +164,123 @@ class Knight
      *
      * @param number $limit
      * @param boolean $closed
-     * 
+     *
      * @return boolean completed tour
-     * @link http://www.geeksforgeeks.org/warnsdorffs-algorithm-knights-tour-problem/ 
-     * @todo Look for way of recursing through move sets until a closed tour is found 
-     * or all options are exhausted  
+     * @link http://www.geeksforgeeks.org/warnsdorffs-algorithm-knights-tour-problem/
+     * @todo Look for prediction pattern for identifying closed tours
      */
-    public function explore_warnsdorff($limit = 64, $closed = true) {
-        // Check if tour is closed (Can end at starting point)
-        if ($this->board->getCounter() == pow($this->board->getSize(), 2)) {
-            $neighbors = $this->survey(null, false, true);
-            if ($this->debug) {
-                print "Looking for: [" . implode(",", $this->history[0]) . "] in neighboring positions: (" . implode(", ", array_map(function($n){return "[".implode(",", $n)."]";}, $neighbors)) . ")\n";
-            }
-            return in_array($this->history[0], $neighbors);
+    public function explore($limit = 64, $closed = true) {
+        $board = $this->board;
+        
+        // Check unvisited squares
+        if (pow($board->getSize(),2) == count(array_filter($board->getMap()))) {
+            return true;
         }
         
-        $current_location = $this->board->location();
+        // Check iteration limit
+        if ($limit <= 0) {
+            return false;
+        }
         
         // 3.a Let S be the set of positions accessible from P
-        $this->coverage[] = $accessible_moves = $this->survey(null, true, true);
-        $number_of_squares = count($accessible_moves);
-        $location_accessibility = [];
+        $this->coverage[] = $accessible_squares = $this->scout();
+        $number_of_squares = count($accessible_squares);
         if ($this->debug) {
-            print "Possible moves from " . implode(", ", $current_location) . ": {$number_of_squares}.\n";
+            print "Possible moves from [" . implode(",", $board->getPosition('numeric')) . "] : {$number_of_squares}.\n";
         }
         if ($number_of_squares > 0) {
-            foreach (array_keys($accessible_moves) as $direction) {
-                $displacement = $this->_displace_local($direction);
-                $location = Board::displace($current_location, $displacement);
-                $board = new Board($location, $this->board->getSize());
-                $location_accessibility[$direction] = count($this->survey($board, false));
-                unset($board);
-            }
             // 3b. Set P to be the position in S with minimum accessibility
-            $this->_shuffle_assoc($location_accessibility);
-            $minimum_accessibility = min($location_accessibility);
-            $maximum_accessibility = max($location_accessibility);
-            $minimum_accessible_direction = array_search($minimum_accessibility, $location_accessibility);
-            // 3c. Mark the board at P with the current move number
-            if ($this->move($minimum_accessible_direction)) {
-                $this->moves[] = $minimum_accessible_direction;
+            $minimum_accessibile_squares = array_keys($accessible_squares, min($accessible_squares));
+            if (count($minimum_accessibile_squares) > 1) {
+                // Randomize for decision forks  
+                shuffle($minimum_accessibile_squares);
             }
-            if (empty($this->pmr) || $this->pmr['value'] <= $maximum_accessibility) {
+            $minimum_accessibile_square = reset($minimum_accessibile_squares);
+            $maximum_accessible_square = array_search(max($accessible_squares), $accessible_squares);
+            // 3c. Mark the board at P with the current move number
+            if ($this->move($minimum_accessibile_square)) {
+                $this->moves[] = $minimum_accessibile_square;
+            }
+            if (empty($this->pmr) || $this->pmr['value'] <= $maximum_accessible_square) {
                 $this->pmr = [
                     'index' => count($this->moves) - 1,
-                    'value' => $maximum_accessibility
+                    'value' => $maximum_accessible_square
                 ];
             }
             if ($limit > 0) {
-                return $this->explore_warnsdorff(-- $limit);
+                return $this->explore(-- $limit);
             }
         } elseif ($this->pmr) {
             if ($this->debug) {
                 print "Backtracking  ... .\n";
             }
-            if ($this->_backtrack(0, true)) {
-                return $this->explore_warnsdorff(-- $limit);
+            if ($this->_backtrack($this->pmr['index'], -- $limit, false)) {
+                return $this->explore(-- $limit);
+            }
+        } else {
+            if ($this->debug) {
+                print "Backtracking  ... .\n";
+            }
+            if ($this->_backtrack(0, -- $limit, true)) {
+                return $this->explore(-- $limit);
             }
         }
         return false;
+    }
+    
+    /**
+     * Check if tour is closed (Can end at starting point)
+     * 
+     * @return boolean
+     */
+    function closed()
+    {
+        $closed = false;
+        $board = $this->board;
+        if (pow($board->getSize(),2) == count(array_filter($board->getMap()))) {
+            $adjacent = $this->adjacent($board->getPosition());
+            if ($this->debug) {
+                print "Looking for: [" . implode(",", $board->positionCoords($this->history[0])) . "] in neighboring positions: (" . implode(", ", array_map(function($n) use ($board) {return "[".implode(",", $board->positionCoords($n))."]";}, $adjacent)) . ")\n";
+            }
+            $closed = in_array($this->history[0], $adjacent);
+        }
+        return $closed;
+    }
+    
+    /**
+     * Performs a simple brute-force backtrack of previous moves, with optional check
+     *
+     * @param number $point            
+     * @param number $limit            
+     * @param string $survey            
+     * @throws \Exception
+     *
+     * @todo Refactor to allow calculation of unexplored spaces
+     *      
+     * @return boolean
+     */
+    protected function _backtrack($point = 0, $limit = 0, $survey = false)
+    {
+        for ($i = count($this->moves) - 2; $i > $point; $i --) {
+            $position = $this->moves[$i];
+            if (! $this->move($position)) {
+                throw new \Exception('Could not backtrack to move #' . $i);
+                return false;
+            } else {
+                $this->moves[] = $position;
+            }
+            if ($survey) {
+                if ($this->adjacent(null, null, true)) {
+                    $this->pmr = null;
+                    return true;
+                }
+            }
+            if ($limit && (0 === -- $limit)) {
+                return false;
+            }
+        }
+        $this->pmr = null;
+        return true;
     }
 
     /**

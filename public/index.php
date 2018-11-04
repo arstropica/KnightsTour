@@ -28,8 +28,8 @@ if (! empty($_POST)) {
     ];
     if (! empty($_POST['x']) && ! empty($_POST['y'])) {
         $loc = [
-            $x = $_POST['x'] ? : rand(1, $size),
-            $y = $_POST['y'] ? : rand(1, $size)
+            $x = ($_POST['x'] ? : rand(1, $size)),
+            $y = ($_POST['y'] ? : rand(1, $size))
         ];
     }
     
@@ -37,9 +37,11 @@ if (! empty($_POST)) {
     $knight = new Knight($board);
     try {
         $start = microtime(true);
-        $closed = $knight->explore_warnsdorff(pow($size, 2) * 2);
+        $complete = $knight->explore(pow($size, 2) * 2);
+        $closed = $knight->closed();
         $duration = microtime(true) - $start;
         $mem_usage = memory_get_peak_usage();
+        $result['complete'] = $complete;
         $result['closed'] = $closed;
         $result['moves'] = $knight->getNumMoves();
         $result['counter'] = $board->getCounter();
@@ -136,13 +138,13 @@ body {
             				<div class="row">
             					<div class="col-xs-6">
                 					<p><span class="coverage-num"><?php echo $result['coverage'] * 100; ?>%</span> of squares covered</p>
-        							<p>Net Algorithm efficiency : <?php echo round(($result['total'] / ($result['moves'] + 1)) * 100, 2); ?>%</p>
+        							<p>Net Algorithm efficiency : <?php echo round(($result['total'] / ($result['moves'])) * 100, 2); ?>%</p>
 									<p>Move Efficiency: <span id="meff" style="font-style: italic">100%</span></p>
         							<p>Memory Usage : <?php echo round($mem_usage / 1024000, 2); ?> mB</p>
                 				</div>
                 				<div class="col-xs-6">
-                					<p><span class="moves-num"><?php echo $result['closed'] ? "Closed" : "Open"; ?> Tour completed in <?php echo $result['moves'] + 1; ?></span> moves</p>
-        							<p>Extra Moves Used : <?php echo max(0,$result['moves'] + 1 - $result['total']); ?></p>
+                					<p><span class="moves-num"><strong><?php echo $result['closed'] ? "Closed" : ($result["complete"] ? "Open" : "Incomplete"); ?></strong> Tour completed in <?php echo $result['moves']; ?></span> moves</p>
+        							<p>Extra Moves Used : <?php echo max(0,$result['moves'] - $result['total']); ?></p>
 									<p>Advance Potential: <span id="scov">-</span></p>
         							<p>Time taken (ms) : <?php echo round($duration * 1000, 2); ?></p>
                 				</div>

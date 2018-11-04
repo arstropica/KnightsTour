@@ -22,15 +22,21 @@ $(function() {
 				: data['history'][step];
 	}
 	
+	function index2Board(index) {
+		var size = Math.sqrt(data.total);
+		return [Math.ceil(index / size), ((index - 1) % size) + 1];
+	}
+	
 	function getCoverage(step) {
 		return data['scoverage'][step] === undefined ? false
 				: data['scoverage'][step];
 	}
 
 	function getSquare(value) {
-		var square = false;
-		var loc = getHistory(value);
-		if (loc) {
+		var square = false, loc,
+		pos = getHistory(value);
+		if (pos) {
+			loc = index2Board(pos);
 			square = $('#board').find('#' + loc[0] + 'x' + loc[1]).get(0);
 		}
 		return square;
@@ -98,9 +104,9 @@ $(function() {
 	$slider = $('#slider').slider(
 			{
 				formatter : function(value) {
-					var indices = getHistory(value);
-					var loc = indices ? [ String.fromCharCode(97 + indices[1]),
-							size - indices[0] ].join('') : 'None';
+					var indices = index2Board(getHistory(value));
+					var loc = indices ? [ String.fromCharCode(96 + indices[1]),
+							indices[0] ].join('') : 'None';
 					return 'Current Location: ' + loc;
 				}
 			}).on('change', function(e) {

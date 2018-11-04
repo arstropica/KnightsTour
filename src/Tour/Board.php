@@ -12,9 +12,9 @@ class Board
 
     /**
      *
-     * @var array
+     * @var integer
      */
-    protected $loc;
+    protected $position;
 
     /**
      *
@@ -31,168 +31,81 @@ class Board
     /**
      * Constructor
      *
-     * @param array $loc            
+     * @param array $c
      * @param number $size            
      */
-    public function __construct($loc = [1,1], $size = 8)
+    public function __construct($c = [1,1], $s = 8)
     {
-        $this->size = $size;
-        $this->loc = $this->addressToNum($loc);
+        $this->map = array_fill(1, $s*$s, 0);
+        $this->size = $s;
+        $this->position = $this->positionIndex($c);
+        if (! $this->valid($this->position)) {
+            throw new \Exception('Invalid Position : '.$this->position);
+            exit;
+        }
         $this->counter = 0;
-        $map = array_fill(1, $size, array_fill(1, $size, 0));
 
         // 2. Mark the board at P with the move number “1”
-        $map[$this->loc[1]][$this->loc[0]] = 1;
+        $this->map[$this->position] = 1;
         $this->counter ++;
-        $this->map = $map;
     }
-
+    
+    /**
+     * Validate position exists on board
+     * 
+     * @param integer|array $position
+     * @return boolean
+     */
+    public function valid($position) {
+        if (is_array($position)) {
+            $s = $this->size;
+            return array_reduce($position, function($valid, $xy) use ($s){return $xy <= $s && $xy > 0 ? $valid : false;}, true);
+        } else {
+            return (array_key_exists($position, $this->map));
+        }
+    }
+    
     /**
      * Update board with new coordinates
      *
-     * @param array $loc            
+     * @param integer $position            
      * @return number|boolean
      */
-    protected function _update($loc)
+    public function update($position)
     {
-        try {
-            if (! $this->map[$loc[1]][$loc[0]]) {
-                $this->map[$loc[1]][$loc[0]] = ++ $this->counter;
+        if (array_key_exists($position, $this->map)) {
+            if (0 === $this->map[$position]) {
+                $this->map[$position] = ++ $this->counter;
             }
-            $this->loc = $loc;
+            $this->position = $position;
             return $this->counter;
-        } catch (\Exception $e) {
-            print $e->getMessage() . "\n";
         }
         return false;
     }
-    
-    /**
-     * Check validity / board status, and optionally update, displacement
-     *
-     * @param array $displacement            
-     * @param string $update            
-     * @param string $force            
-     * @return number|boolean|number
-     */
-    protected function _check($displacement, $update = false, $force = false)
-    {
-        $result = 0;
-        if (! $this->isValidMove($displacement)) {
-            $result = - 1;
-        }
-        $loc = $this->loc;
-        $loc[0] += $displacement[0];
-        $loc[1] += $displacement[1];
-        if ($this->map[$loc[1]][$loc[0]] === 0 || $force) {
-            $result = 1;
-        }
-        
-        if ($result === 1 && $update) {
-            return $this->_update($loc);
-        }
-        return $result;
-    }
 
     /**
-     * Check validity and board status of a move displacement
-     *
-     * @param array $displacement            
-     * @return number|boolean
-     */
-    public function check($displacement)
-    {
-        return $this->_check($displacement);
-    }
-
-    /**
-     * Update board with new displacement
-     *
-     * @param array $displacement            
-     * @param string $force            
-     * @return number|boolean
-     */
-    public function update($displacement, $force = false)
-    {
-        return $this->_check($displacement, true, $force);
-    }
-
-    /**
-     * Check validity of displacement
-     *
-     * @param array $displacement            
-     * @param string $new            
-     * @return boolean
-     */
-    public function isValidMove($displacement, $new = false)
-    {
-        $loc = $this->loc;
-        if (! is_array($displacement)) {
-            exit('Move not valid!');
-        }
-        foreach ($displacement as $axis => $squares) {
-            $loc[$axis] += $displacement[$axis];
-            if ($loc[$axis] > $this->size || $loc[$axis] < 1) {
-                return false;
-            }
-        }
-        if ($new && $this->map[$loc[1]][$loc[0]] === 1) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Return current location on board
-     *
+     * Returns coordinates from indexed position
+     * 
+     * @param number $index
      * @return number[]
      */
-    public function location()
+    public function positionCoords($index)
     {
-        return [
-            $this->loc[0],
-            $this->loc[1]
-        ];
-    }
-    
-    /**
-     * Returns a new location by displacement
-     * 
-     * @param array $location
-     * @param array $displacement
-     * @return array
-     */
-    public static function displace($location, $displacement)
-    {
-        return array_map(function($coord, $delta) {
-            return $coord + $delta;
-        }, $location, $displacement);
+        $s = $this->size;
+        return [(($index - 1) % $s) + 1, (intdiv($index - 1, $s)) + 1];
     }
 
     /**
-     * Normalize alphanumeric address
+     * Returns index of position coordinates
      * 
-     * @param array $loc
-     * @return array normalized coordinates
+     * @param array $coords
+     * @return number
      */
-    public function addressToNum($loc)
+    public function positionIndex($coords) 
     {
-        return array_map(function($coord){
-            return ctype_alpha($coord) ? ord($coord) - 96 : $coord;
-        }, $loc);
+        return intval(($coords[1] - 1) * $this->size) + intval(is_numeric($coords[0]) ? $coords[0] : ord($coords[0]) - 96);
     }
     
-    /**
-     * Returns alphanumeric location
-     * 
-     * @param array $loc
-     * @return array
-     */
-    public function numToAddress($loc)
-    {
-        return [chr($loc[0] + 96), $loc[1]];
-    }
-
     /**
      * Print Graphical representation of board
      *
@@ -201,10 +114,16 @@ class Board
      */
     public function getMap($graphical = false)
     {
-        $map = array_reverse($this->map, true);
-        return $graphical ? implode("\n", array_map(function ($r) {
-            return implode("\t", $r);
-        }, $map)) : $map;
+        $map = $this->map;
+        if ($graphical) {
+            $map = [];
+            $s = $this->size;
+            for ($i=pow($s,2); $i > 0; $i -=$s) {
+                $map[] = array_slice($this->map, $i - $s, $s, true);
+            }
+            return implode("\n", array_map(function($rank){return implode("\t", $rank);},$map));
+        }
+        return $map;
     }
 
     /**
@@ -225,6 +144,31 @@ class Board
     public function getSize()
     {
         return $this->size;
+    }
+    
+    /**
+     * Return board position
+     * 
+     * @param string $mode
+     * 
+     * @return number
+     */
+    public function getPosition($mode = 'index') {
+        $p = $position = $this->position;
+        $s = $this->size;
+        switch ($mode) {
+            case 'algebraic':
+                $position = [chr(($p - 1) % $s + 97), (intdiv($p - 1, $s)) + 1];
+                break;
+            default:
+            case 'numeric':
+                $position = [(($p - 1) % $s) + 1, (intdiv($p - 1, $s)) + 1];
+                break;
+            case 'index' :
+                $position = $p;
+                break;
+        }
+        return $position;
     }
 }
 
