@@ -30,6 +30,10 @@ output: output results to console. Defaults to `1`
 - Submit coordinates and size values, or leave blank for defaults.
 
 
+## Benchmark
+
+![Benchmark Results](https://raw.githubusercontent.com/arstropica/KnightsTour/master/public/img/benchmark.jpg)
+
 ## To Do
 
 - Implement a prediction method for identifying closed tours
