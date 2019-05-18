@@ -19,7 +19,9 @@ y: starting y coordinate (i.e. `1`). Defaults to random.
 
 size: board size (squared). Defaults to `8`
 
-`php -f index.php x y size`
+output: output results to console. Defaults to `1`
+
+`php -f index.php x y size output`
 
 #### From Browser
 
